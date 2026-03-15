@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 class ErrorHandler {
-  static NotFound(req: Request, res: Response, _next: NextFunction) {
+  static notFound(req: Request, res: Response, _next: NextFunction) {
     res.status(404).json({ message: "Resource Not Found" });
   }
 

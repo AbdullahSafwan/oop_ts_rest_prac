@@ -1,28 +1,50 @@
-import express from "express";
+import express, { Application } from "express";
 import cors from "cors";
 import helmet from "helmet";
-import morgan from "morgan";
-import router from "./routes";
-import config from "./config/env";
+import ErrorHandler from "./helpers/errorHandler";
+import Database from "./config/db";
+import dotenv from "dotenv";
+import userRoutes from "./routes/user.route";
 
-const app = express();
+class App {
+  private readonly app: Application;
+  private readonly port: number;
 
-app.use(helmet());
+  constructor() {
+    this.app = express();
+    this.port = parseInt(process.env.PORT || "3000");
+    this.init();
+  }
 
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN || true,
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Cache-Control"],
-  }),
-);
+  private init() {
+    this.initConfig();
+    this.initMiddlewares();
+    this.initRoutes();
+    this.initErrorHandling();
+  }
 
-app.use(morgan(config.nodeEnv === "production" ? "combined" : "dev"));
+  private initConfig() {
+    new Database();
+  }
+  private initMiddlewares() {
+    this.app.use(cors());
+    this.app.use(helmet());
+    this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: true }));
+    dotenv.config();
+  }
+  private initRoutes() {
+    this.app.use("/api/v1/users", userRoutes);
+  }
+  private initErrorHandling() {
+    this.app.use(ErrorHandler.notFound);
+    this.app.use(ErrorHandler.serverError);
+  }
+  public listen() {
+    this.app.listen(this.port, () => {
+      console.log(`Server is running on http://localhost:${this.port}`);
+    });
+  }
+}
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.use("/", router);
-
-export default app;
+export default App;

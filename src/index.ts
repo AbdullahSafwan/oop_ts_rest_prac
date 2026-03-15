@@ -1,10 +1,5 @@
-import app from "./app";
-import config from "./config/env";
+import App from "./app";
 
-const port = config.port;
+const app = new App();
 
-app.listen(port, () => {
-  console.log("listening to port", port);
-});
-
-export default app;
+app.listen();
