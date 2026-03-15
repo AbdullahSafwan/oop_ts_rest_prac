@@ -20,7 +20,7 @@ class GenericRepository<T> implements BaseRepository<T> {
     return this.model.findById(id).exec();
   }
 
-async update(id: string, data: UpdateQuery<T>): Promise<T | null> {
+  async update(id: string, data: UpdateQuery<T>): Promise<T | null> {
     return this.model.findByIdAndUpdate(id, data, { new: true }).exec();
   }
 
@@ -28,7 +28,8 @@ async update(id: string, data: UpdateQuery<T>): Promise<T | null> {
     return this.model.findByIdAndDelete(id).exec();
   }
 
-async findAllPaginatedWithFilter(filter: QueryFilter<T>, page: number, limit: number): Promise<T[]> {    return this.model
+  async findAllPaginatedWithFilter(filter: QueryFilter<T>, page: number, limit: number): Promise<T[]> {
+    return this.model
       .find(filter)
       .skip((page - 1) * limit)
       .limit(limit)
